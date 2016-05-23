@@ -1,0 +1,18 @@
+#!/bin/bash
+# virt-customize script to install packages in the overcloud base image
+
+set -eux
+
+yum install -y {% for package in artib_overcloud_packages %} {{ package }} {% endfor %}
+
+
+yum install -y unzip
+
+# ceph enablement
+pushd /usr/share/openstack-tripleo-heat-templates
+
+curl -o patch.zip https://review.openstack.org/changes/273754/revisions/32d5658b903a2ac4ab192a5b83c35a31c76d4c06/patch?zip
+unzip patch.zip
+patch -p1 < 32d5658b.diff
+
+popd
